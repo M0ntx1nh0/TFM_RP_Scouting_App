@@ -1,0 +1,53 @@
+# =========================
+# CONFIGURACIÓN DEL SERVIDOR
+# =========================
+[server]
+
+# Ejecutar la app en modo headless (no abre navegador automáticamente).
+# Útil cuando se despliega en producción o en Streamlit Cloud.
+headless = false
+
+# Recarga automática de la app cuando se guarda un archivo.
+# Muy útil durante el desarrollo para ver cambios al instante.
+runOnSave = true
+
+
+# =========================
+# PERSONALIZACIÓN DEL TEMA VISUAL DE LA APP
+# =========================
+[theme]
+
+# Color principal para elementos activos (botones, sliders, selectores).
+primaryColor = "#1E90FF"            # Azul brillante
+
+# Color de fondo principal de la aplicación (zona central).
+backgroundColor = "#ffffff"         # Blanco puro
+
+# Color de fondo secundario (sidebar, tarjetas).
+secondaryBackgroundColor = "#f0f2f6"  # Gris claro muy suave
+
+# Color del texto principal.
+textColor = "#000000"               # Negro
+
+# Tipo de fuente (también puedes usar: "serif" o "monospace").
+font = "sans serif"
+
+
+# =========================
+# DISEÑO GENERAL DE LA INTERFAZ DE USUARIO
+# =========================
+[ui]
+
+# Utiliza todo el ancho de la pantalla (modo wide),
+# ideal para dashboards con visualizaciones grandes.
+layout = "wide"
+
+
+# =========================
+# COMPORTAMIENTO DEL CLIENTE (INTERFAZ)
+# =========================
+[client]
+
+# Oculta el menú de navegación lateral automático de Streamlit.
+# Esto permite que tú controles el sidebar de navegación manualmente.
+showSidebarNavigation = false

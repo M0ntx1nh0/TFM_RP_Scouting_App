@@ -1,0 +1,15 @@
+# === Ignorar el entorno virtual (no se sube a GitHub) ===
+.venv/                           # Carpeta que contiene todas las librerías instaladas
+
+# === Archivos temporales generados por Python ===
+__pycache__/                     # Caché de los archivos Python (carpetas ocultas automáticas)
+*.pyc                            # Archivos bytecode compilados (también temporales)
+
+# === Archivos temporales de Jupyter Notebooks ===
+*.ipynb_checkpoints/             # Checkpoints automáticos creados por Jupyter
+
+# === Carpeta con PDFs generados desde la app ===
+reportes/                        # Exportaciones o informes que no necesitas versionar
+
+# Archivos con datos reales de usuarios (NO subir)
+data/usuarios.csv
