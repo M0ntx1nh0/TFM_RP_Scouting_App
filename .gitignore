@@ -10,6 +10,3 @@ __pycache__/                     # Caché de los archivos Python (carpetas ocult
 
 # === Carpeta con PDFs generados desde la app ===
 reportes/                        # Exportaciones o informes que no necesitas versionar
-
-# Archivos con datos reales de usuarios (NO subir)
-data/usuarios.csv
