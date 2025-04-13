@@ -55,10 +55,10 @@ def app():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.image("/Users/macmontxinho/Desktop/TFM_py/assets/RP Scouting APP.png", width=160)  # Ajusta el ancho aquí si lo ves muy grande o pequeño
+        st.image("assets/RP Scouting APP.png", width=160)  # Ajusta el ancho aquí si lo ves muy grande o pequeño
 
     with col2:
-        st.image("/Users/macmontxinho/Desktop/TFM_py/assets/MonPel.PNG", width=160)
+        st.image("assets/Palayo_Montxinho.png", width=160)
 
     # === Exportar Página de Inicio en PDF ===
     st.markdown("---")
