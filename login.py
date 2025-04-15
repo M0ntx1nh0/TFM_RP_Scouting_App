@@ -66,11 +66,13 @@ def generarLogin():
             st.markdown("### 📩 ¿Te interesa acceder a la plataforma?")
             st.markdown("Si deseas recibir credenciales de acceso, por favor completa el siguiente formulario:")
 
-            # Solo muestra el formulario si no ha sido enviado ya
-            if "form_enviado" not in st.session_state:
-                st.session_state["form_enviado"] = False
+            # Inicializa los campos del formulario en session_state antes de mostrarlo
+            for campo in ["nombre_contacto", "correo_contacto", "mensaje_contacto"]:
+                if campo not in st.session_state:
+                    st.session_state[campo] = ""
 
-            if not st.session_state["form_enviado"]:
+            # Solo muestra el formulario si no ha sido enviado
+            if not st.session_state.get("form_enviado", False):
                 with st.form("contact_form"):
                     nombre_contacto = st.text_input("✍ Nombre completo", key="nombre_contacto")
                     correo_contacto = st.text_input("📧 Correo electrónico", key="correo_contacto")
@@ -97,12 +99,12 @@ def generarLogin():
 
                                 df_total.to_csv(ruta_archivo, index=False)
 
-                                # 🧼 Limpiar los campos del formulario tras enviar
+                                # 🧼 Limpiar los campos antes de mostrar el mensaje de éxito
+                                st.session_state["form_enviado"] = True
                                 st.session_state["nombre_contacto"] = ""
                                 st.session_state["correo_contacto"] = ""
                                 st.session_state["mensaje_contacto"] = ""
 
-                                st.session_state["form_enviado"] = True
                                 st.rerun()
 
                             except Exception as e:
@@ -113,9 +115,6 @@ def generarLogin():
                 st.success("✅ ¡Gracias por tu interés! Nos pondremos en contacto contigo pronto.")
                 if st.button("📝 Enviar otra solicitud"):
                     st.session_state["form_enviado"] = False
-                    st.session_state["nombre_contacto"] = ""
-                    st.session_state["correo_contacto"] = ""
-                    st.session_state["mensaje_contacto"] = ""
                     st.rerun()
             st.markdown("---")
 
