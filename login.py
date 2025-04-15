@@ -9,7 +9,22 @@ cookie_manager = stx.CookieManager()
 
 # === Función para cargar los usuarios desde CSV ===
 def cargar_usuarios():
-    return pd.read_csv('data/usuarios.csv')  # username, email, password
+    import streamlit as st
+    import os
+
+    # Si existe el archivo CSV local, úsalo
+    if os.path.exists("data/usuarios.csv"):
+        return pd.read_csv("data/usuarios.csv")
+    else:
+        # Si no, usar st.secrets (para el despliegue en la nube)
+        data = []
+        for username, info in st.secrets["usuarios"].items():
+            data.append({
+                "usuario": username,
+                "email": info["email"],
+                "contrasena": info["password"]
+            })
+        return pd.DataFrame(data) # username, email, password
 
 # === Validar login con username o email ===
 def validarUsuario(login, password):
