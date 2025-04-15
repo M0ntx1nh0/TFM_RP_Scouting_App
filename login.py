@@ -51,12 +51,7 @@ def generarLogin():
                         st.session_state['usuario'] = parLogin
                         st.session_state['authenticated'] = True
 
-                        # Solo calculamos expiry si remember_me ya fue definido por el checkbox
-                        if remember_me:
-                            expiry = datetime.now() + timedelta(days=1)
-                        else:
-                            expiry = datetime.now() + timedelta(hours=1)
-
+                        expiry = datetime.now() + (timedelta(days=1) if remember_me else timedelta(hours=1))
                         cookie_manager.set('authenticated', 'true', key='auth_cookie', expires_at=expiry)
                         cookie_manager.set('usuario', parLogin, key='user_cookie', expires_at=expiry)
 
@@ -68,50 +63,40 @@ def generarLogin():
             st.markdown("---")
 
             # 🔹 Formulario de contacto para solicitar acceso
-            # 🔹 Formulario de contacto para solicitar acceso
-            # 🔹 Formulario de contacto para solicitar acceso
             st.markdown("### 📩 ¿Te interesa acceder a la plataforma?")
             st.markdown("Si deseas recibir credenciales de acceso, por favor completa el siguiente formulario:")
 
-            # Bandera para reiniciar
             if "form_enviado" not in st.session_state:
                 st.session_state["form_enviado"] = False
 
-            # Solo muestra el formulario si no ha sido enviado ya
             if not st.session_state["form_enviado"]:
                 with st.form("contact_form"):
-                    nombre_contacto = st.text_input("✍ Nombre completo")
-                    correo_contacto = st.text_input("📧 Correo electrónico")
-                    mensaje_contacto = st.text_area("💬 Cuéntanos por qué te interesa nuestra plataforma")
+                    nombre = st.text_input("✍ Nombre completo", key="nombre_contacto")
+                    correo = st.text_input("📧 Correo electrónico", key="correo_contacto")
+                    mensaje = st.text_area("💬 Cuéntanos por qué te interesa nuestra plataforma", key="mensaje_contacto")
+                    submit = st.form_submit_button("📩 Enviar solicitud")
 
-                    submit_contact = st.form_submit_button("📩 Enviar solicitud")
-
-                    if submit_contact:
-                        if nombre_contacto and correo_contacto and mensaje_contacto:
+                    if submit:
+                        if nombre and correo and mensaje:
                             try:
-                                import pandas as pd
-                                from datetime import datetime
-                                import os
-
                                 ruta_archivo = "data/solicitudes_acceso_template.csv"
-                                nueva_solicitud = pd.DataFrame([{
-                                    "nombre": nombre_contacto,
-                                    "email": correo_contacto,
-                                    "mensaje": mensaje_contacto,
+                                nueva = pd.DataFrame([{
+                                    "nombre": nombre,
+                                    "email": correo,
+                                    "mensaje": mensaje,
                                     "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                                 }])
 
                                 if os.path.exists(ruta_archivo):
                                     df_existente = pd.read_csv(ruta_archivo)
-                                    df_total = pd.concat([df_existente, nueva_solicitud], ignore_index=True)
+                                    df_total = pd.concat([df_existente, nueva], ignore_index=True)
                                 else:
-                                    df_total = nueva_solicitud
+                                    df_total = nueva
 
                                 df_total.to_csv(ruta_archivo, index=False)
 
                                 st.success("✅ ¡Gracias por tu interés! Nos pondremos en contacto contigo pronto.")
-                                st.session_state["form_enviado"] = True  # Evita que se re-muestre el formulario
-                                st.rerun()
+                                st.session_state["form_enviado"] = True
 
                             except Exception as e:
                                 st.error(f"❌ Error al guardar la solicitud: {e}")
@@ -120,8 +105,11 @@ def generarLogin():
             else:
                 st.success("✅ ¡Gracias por tu interés! Nos pondremos en contacto contigo pronto.")
                 if st.button("📝 Enviar otra solicitud"):
+                    for key in ["nombre_contacto", "correo_contacto", "mensaje_contacto"]:
+                        if key in st.session_state:
+                            del st.session_state[key]
                     st.session_state["form_enviado"] = False
-                    st.experimental_rerun()
+                    st.rerun()
 
             st.markdown("---")
 
