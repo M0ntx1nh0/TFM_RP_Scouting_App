@@ -101,12 +101,8 @@ def generarLogin():
 
                                 # 🧼 Limpiar los campos antes de mostrar el mensaje de éxito
                                 st.session_state["form_enviado"] = True
-                                st.session_state["nombre_contacto"] = ""
-                                st.session_state["correo_contacto"] = ""
-                                st.session_state["mensaje_contacto"] = ""
-
                                 st.rerun()
-
+                               
                             except Exception as e:
                                 st.error(f"❌ Error al guardar la solicitud: {e}")
                         else:
