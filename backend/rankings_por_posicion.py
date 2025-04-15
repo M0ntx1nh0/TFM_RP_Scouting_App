@@ -48,7 +48,7 @@ class EstiloFutbolJugadores:
         df_scaled, df_original = self.read_preprocess()
 
         df_scaled['pos'] = df_scaled['Pos_Especifica_Transfermarkt'].fillna("").astype(str).apply(
-            lambda x: any(d in x for d in demarcaciones))
+            lambda x:x in demarcaciones)
         df_filtered = df_scaled[df_scaled['pos']].copy()
 
         if df_filtered.empty:

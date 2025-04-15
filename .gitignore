@@ -10,3 +10,9 @@ __pycache__/                     # Caché de los archivos Python (carpetas ocult
 
 # === Carpeta con PDFs generados desde la app ===
 reportes/                        # Exportaciones o informes que no necesitas versionar
+
+# Archivos temporales de Excel (abiertos por error o en uso por Excel)
+~$*.xlsx
+
+# Archivos del sistema de macOS
+.DS_Store
