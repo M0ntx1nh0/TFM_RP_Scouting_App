@@ -3,20 +3,17 @@ import pandas as pd
 import extra_streamlit_components as stx
 from datetime import datetime, timedelta
 import os
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 # Inicializar el gestor de cookies
 cookie_manager = stx.CookieManager()
 
-# === Función para cargar los usuarios desde CSV ===
+# === Función para cargar los usuarios desde CSV o st.secrets ===
 def cargar_usuarios():
-    import streamlit as st
-    import os
-
-    # Si existe el archivo CSV local, úsalo
     if os.path.exists("data/usuarios.csv"):
         return pd.read_csv("data/usuarios.csv")
     else:
-        # Si no, usar st.secrets (para el despliegue en la nube)
         data = []
         for username, info in st.secrets["usuarios"].items():
             data.append({
@@ -24,7 +21,7 @@ def cargar_usuarios():
                 "email": info["email"],
                 "contrasena": info["password"]
             })
-        return pd.DataFrame(data) # username, email, password
+        return pd.DataFrame(data)
 
 # === Validar login con username o email ===
 def validarUsuario(login, password):
@@ -44,6 +41,23 @@ def check_authentication():
     else:
         st.session_state['authenticated'] = False
         st.session_state['usuario'] = None
+
+# === Enviar datos a Google Sheets ===
+def guardar_en_google_sheets(nombre, correo, mensaje):
+    try:
+        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+        if os.path.exists("data/rpscoutingapp-ef6c5338c363.json"):
+            creds = ServiceAccountCredentials.from_json_keyfile_name("data/rpscoutingapp-ef6c5338c363.json", scope)
+        else:
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(st.secrets["gcp_service_account"], scope)
+
+        client = gspread.authorize(creds)
+        sheet = client.open("solicitudes_accesos").worksheet("info")
+        sheet.append_row([nombre, correo, mensaje, datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
+        return True
+    except Exception as e:
+        st.error(f"❌ Error al guardar en Google Sheets: {e}")
+        return False
 
 # === Genera el formulario de login y/o contacto ===
 def generarLogin():
@@ -77,16 +91,13 @@ def generarLogin():
 
             st.markdown("---")
 
-            # 🔹 Formulario de contacto para solicitar acceso
             st.markdown("### 📩 ¿Te interesa acceder a la plataforma?")
             st.markdown("Si deseas recibir credenciales de acceso, por favor completa el siguiente formulario:")
 
-            # Inicializa los campos del formulario en session_state antes de mostrarlo
             for campo in ["nombre_contacto", "correo_contacto", "mensaje_contacto"]:
                 if campo not in st.session_state:
                     st.session_state[campo] = ""
 
-            # Solo muestra el formulario si no ha sido enviado
             if not st.session_state.get("form_enviado", False):
                 with st.form("contact_form"):
                     nombre_contacto = st.text_input("✍ Nombre completo", key="nombre_contacto")
@@ -97,29 +108,9 @@ def generarLogin():
 
                     if submit_contact:
                         if nombre_contacto and correo_contacto and mensaje_contacto:
-                            try:
-                                ruta_archivo = "data/solicitudes_acceso_template.csv"
-                                nueva_solicitud = pd.DataFrame([{
-                                    "nombre": nombre_contacto,
-                                    "email": correo_contacto,
-                                    "mensaje": mensaje_contacto,
-                                    "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                                }])
-
-                                if os.path.exists(ruta_archivo):
-                                    df_existente = pd.read_csv(ruta_archivo)
-                                    df_total = pd.concat([df_existente, nueva_solicitud], ignore_index=True)
-                                else:
-                                    df_total = nueva_solicitud
-
-                                df_total.to_csv(ruta_archivo, index=False)
-
-                                # 🧼 Limpiar los campos antes de mostrar el mensaje de éxito
+                            if guardar_en_google_sheets(nombre_contacto, correo_contacto, mensaje_contacto):
                                 st.session_state["form_enviado"] = True
                                 st.rerun()
-                               
-                            except Exception as e:
-                                st.error(f"❌ Error al guardar la solicitud: {e}")
                         else:
                             st.error("❌ Por favor, completa todos los campos antes de enviar.")
             else:

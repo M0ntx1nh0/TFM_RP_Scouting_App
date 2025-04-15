@@ -19,3 +19,6 @@ reportes/                        # Exportaciones o informes que no necesitas ver
 
 #Archivos usuarios
 data/usuarios.csv
+
+#Datos google sheet
+data/rpscoutingapp-ef6c5338c363.json
