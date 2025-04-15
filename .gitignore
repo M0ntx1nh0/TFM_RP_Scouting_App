@@ -16,3 +16,6 @@ reportes/                        # Exportaciones o informes que no necesitas ver
 
 # Archivos del sistema de macOS
 .DS_Store
+
+#Archivos usuarios
+data/usuarios.csv
