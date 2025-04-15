@@ -80,9 +80,13 @@ def generarLogin():
                         st.session_state['usuario'] = parLogin
                         st.session_state['authenticated'] = True
 
-                        expiry = datetime.now() + (timedelta(days=1) if remember_me else timedelta(hours=1))
-                        cookie_manager.set('authenticated', 'true', key='auth_cookie', expires_at=expiry)
-                        cookie_manager.set('usuario', parLogin, key='user_cookie', expires_at=expiry)
+                        if remember_me:
+                            expiry = datetime.now() + timedelta(days=1)
+                            cookie_manager.set('authenticated', 'true', key='auth_cookie', expires_at=expiry)
+                            cookie_manager.set('usuario', parLogin, key='user_cookie', expires_at=expiry)
+                        else:
+                            cookie_manager.set('authenticated', 'true', key='auth_cookie')  # sesión temporal
+                            cookie_manager.set('usuario', parLogin, key='user_cookie')
 
                         st.success("Inicio de sesión exitoso")
                         st.rerun()
